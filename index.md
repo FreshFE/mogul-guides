@@ -1,6 +1,6 @@
 # Mogul
 
-针对食行生鲜业务特别定制的中后台开发规范和相关工具。使用 React、MobX、Ant Design 等工具组织，在此要感谢 Ant Design 提供了优秀的组件库。
+Mogul (_['moɡl]_) 是针对食行生鲜中后台业务特别定制的相关开发规范和工具。使用 React、MobX、Ant Design 等工具实现，在此要感谢 Ant Design 提供了优秀的组件库。
 
 Mogul 提供如下内容：
 
@@ -28,9 +28,14 @@ startapp                                   # 生成的文件根目录
   |- src                                   # 业务代码目录
       |- index.js                          # 入口文件
       |- pages                             # Tip: pages 目录下的一级文件夹以首字母大写驼峰法为准
-          |- Layouts
-              |- Dashboard.js
-          |- Homepage
+          |- App                           # App 路由一级入口
+              |- index.js
+          |- Dashboard                     # Dashboard 路由二级入口
+              |- index.js
+              |- store.js                  # Dashboard 的局部状态（包含 menu 等数据的维护）
+          |- Sign                          # Sign 路由二级入口
+              |- index.js
+          |- Homepage                      # Homepage 路由三级入口
               |- index.js
       |- utils                             # 工具方法目录
           |- axios.js                      # 封装 axios，处理通用错误
@@ -57,7 +62,7 @@ startapp                                   # 生成的文件根目录
     "react-scripts": "1.1.1"
     // @todo 替换成 react-scripts-rewired
     // @todo 添加 pittier git commit 钩子
-    // @todo 添加 @mogul/box 控制 react、react-dom、ant-design 等版本
+    // @todo 替换 @mogul/box 控制 react、react-dom、ant-design 等版本
   },
   "scripts": {
     "start": "react-scripts start",
@@ -71,15 +76,19 @@ startapp                                   # 生成的文件根目录
 
 ```bash
 # 切换至 startapp 根目录
-# 创建名为 project 的 module
-$ mogul module project
+# mogul module [--layout=LAYOUT_NAME] MODULE_NAME
+# --layout 默认为 Dashboard
+# 检测 MODULE_NAME 和 LAYOUT_NAME 必须符合首字母大写的驼峰法
+$ mogul module Projects
 ```
 
 ```bash
 pages
-  |- Layouts
+  |- App
+  |- Dashboard
+  |- Sign
   |- Homepage
-  |- Project
+  |- Projects
       |- index.js                # 入口文件
       |- Collection.js           # 数据集展示
       |- Query.js                # 查询条件
@@ -94,19 +103,127 @@ pages
       |- __test__                # 测试文件目录
 ```
 
-建议为一个实体数据新建一个 module，如果是 Project 实体下关联的子实体，如 Project Category，则新建 module：
+建议为一个实体(Entity)数据新建一个 module，如果是 Project 实体下关联的子实体，如 Project Category，则新建 module：
 
 ```bash
-$ mogul module ProjectCategory
+$ mogul module ProjectCategories
 ```
 
 ```bash
 pages
-  |- Layouts
+  |- App
+  |- Dashboard
+  |- Sign
   |- Homepage
-  |- Project
-  |- ProjectCategory
+  |- Sign
+  |- Projects
+  |- ProjectCategories
 ```
+
+## 第五步：了解路由的运作机制
+
+Mogul Router 通过 React Router 实现了路由业务，在 Mogul 和 React Router 哲学里，一切皆组件。
+
+### 路由树结构与项目目录结构的对应关系
+
+`路由结构图`
+
+```bash
+                                           # 对应的目录文件
+/                                          # pages/App/index.js
+  |- /dashboard                            # pages/Dashboard/index.js
+      |- /dashboard/projects               # pages/Projects/index.js
+          |- /dashboard/projects/:id       # pages/Projects/Collection.js
+          |- /dashboard/projects/:id/edit  # pages/Projects/Editor.js
+      |- /dashboard/project-categories     # pages/ProjectCategories/index.js
+  |- /sign                                 # pages/Sign/index.js
+      |- /sign/in                          # pages/Sign/In.js
+      |- /sign/up                          # pages/Sign/Up.js
+```
+
+`目录结构图`
+
+```bash
+pages
+  |- App
+      |- index.js
+  |- Dashboard
+      |- index.js
+  |- Projects
+      |- index.js
+      |- Collection.js
+      |- Detail.js
+      |- 更多完整目录查看第二步
+  |- ProjectCategories
+  |- Sign
+```
+
+### 路由代码
+
+`src/pages/App/index.js`
+
+```js
+import { App } from "@mogul/components";
+import { Route, Switch } from "react-router";
+import Dashboard from "./Dashboard.js";
+import Sign from "./Sign.js";
+
+export default ({ match }) => (
+  <App>
+    <Switch>
+      <Route match={match.url + "/dashboard"} component={Dashboard} />
+      <Route match={match.url + "/sign"} component={Sign} />
+    </Switch>
+  </App>
+);
+```
+
+`src/pages/Dashboard/index.js`
+
+```js
+import { Dashboard } from "@mogul/components";
+import { Route, Switch } from "react-router";
+import Projects from "./Projects.js";
+import ProjectCategories from "./ProjectCategories.js";
+import store from "./store.js";
+
+export default ({ match }) => (
+  <Dashboard store={store}>
+    <Switch>
+      <Route match={match.url + "/projects"} component={Projects} />
+      <Route
+        match={match.url + "/project-categories"}
+        component={ProjectCategories}
+      />
+      // 由 @mogul/cli 插入新的 module
+    </Switch>
+  </Dashboard>
+);
+```
+
+`src/pages/Projects/index.js`
+
+```js
+import { Route, Switch } from "react-router";
+import Collection from "./Collection.js";
+import Detail from "./Detail.js";
+
+export default ({ match }) => (
+  <Switch>
+    <Route match={match.url} component={Collection} exact />
+    <Route match={match.url + "/:id"} component={Detail} />
+  </Switch>
+);
+```
+
+## 进一步阅读
+
+* @mogul/cli 的接口文档
+* 掌握常用的 Mogul router 和相关的 Params、QueryString 处理
+* 基于 MobX 的状态管理
+* 常见的范式布局
+* 通用的命名规范
+* 嵌套关联实体的 CURD 最佳实践
 
 ## 相关资料
 
