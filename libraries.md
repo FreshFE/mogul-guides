@@ -8,3 +8,4 @@
 ### Github
 
 * freshesx/mogul-template - mogul 脚手架库
+* freshesx/mogul-guides - mogul 开发指南
