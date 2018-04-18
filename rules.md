@@ -41,6 +41,22 @@ _建议通过 PR 贡献更多的缩写提示_
 
 #### 变量命名尽可能表述清楚，哪怕会有较长的单词
 
+_Bad_
+
+`./src/store/basic.js`
+
+```js
+class BasicStore {}
+```
+
+_Good_
+
+`./src/store/BaseCollectionStore.js`
+
+```js
+class BaseCollectionStore {}
+```
+
 #### 注意区分复数、单数和不可数名次，该复数的场合尽可能使用复数
 
 #### 常用命名单词
@@ -64,3 +80,13 @@ _建议通过 PR 贡献更多的推荐命名规范_
 * 公共库的开发、注释、git 记录的提交必须使用英文，便于国际化交流；
 * 公共库的文档建议以母语中文编写，便于充分表达其含义；
 * 项目业务的开发、注释、git 记录采用中文编写，便于中文环境下的快速理解和表达。
+
+### 类文件名与类同名
+
+一个类写一个文件，该文件名与类名同名，如：
+
+`BaseCollectionStore.js`
+
+```js
+class BaseCollectionStore {}
+```
