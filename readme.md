@@ -218,7 +218,7 @@ export default ({ match }) => (
 
 ## 进一步阅读
 
-* @mogul/cli 的接口文档
+* [@mogul/cli 的接口文档](cli.md)
 * 掌握常用的 Mogul router 和相关的 Params、QueryString 处理
 * 基于 MobX 的状态管理
 * 常见的范式布局
