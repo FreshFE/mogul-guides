@@ -14,10 +14,9 @@ Mogul 提供如下内容：
 ## 第一步：创建文件目录
 
 ```bash
-$ npm install --global @mogul/cli
-$ mogul new startapp
-$ cd startapp
-$ yarn start
+$ yarn global add mogul-cli
+$ mogul new
+ ? type project name please: startapp
 ```
 
 ## 第二步：探索文件目录
@@ -54,20 +53,16 @@ startapp                                   # 生成的文件根目录
 ```json
 {
   "name": "startapp",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "react": "^16.2.0",
-    "react-dom": "^16.2.0",
-    "react-scripts": "1.1.1"
-    // @todo 替换成 react-scripts-rewired
-    // @todo 添加 pittier git commit 钩子
-    // @todo 替换 @mogul/box 控制 react、react-dom、ant-design 等版本
-  },
+  "version": "0.0.1",
+  "private": false,
+  "license": "MIT",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom"
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired build",
+    "module": "plop module"
+  },
+  "devDependencies": {
+    "mogul": "^0.0.8"
   }
 }
 ```
@@ -76,10 +71,7 @@ startapp                                   # 生成的文件根目录
 
 ```bash
 # 切换至 startapp 根目录
-# mogul module [--layout=LAYOUT_NAME] MODULE_NAME
-# --layout 默认为 Dashboard
-# 检测 MODULE_NAME 和 LAYOUT_NAME 必须符合首字母大写的驼峰法
-$ mogul module Projects
+$ yarn module
 ```
 
 ```bash
@@ -106,7 +98,8 @@ pages
 建议为一个实体(Entity)数据新建一个 module，如果是 Project 实体下关联的子实体，如 Project Category，则新建 module：
 
 ```bash
-$ mogul module ProjectCategories
+$ yarn module
+ ? type module name please: ProjectCategory
 ```
 
 ```bash
@@ -171,8 +164,8 @@ import Sign from "./Sign.js";
 export default ({ match }) => (
   <App>
     <Switch>
-      <Route match={match.url + "/dashboard"} component={Dashboard} />
-      <Route match={match.url + "/sign"} component={Sign} />
+      <Route path={match.url + "/dashboard"} component={Dashboard} />
+      <Route path={match.url + "/sign"} component={Sign} />
     </Switch>
   </App>
 );
@@ -190,12 +183,12 @@ import store from "./store.js";
 export default ({ match }) => (
   <Dashboard store={store}>
     <Switch>
-      <Route match={match.url + "/projects"} component={Projects} />
+      <Route path={match.url + "/projects"} component={Projects} />
       <Route
-        match={match.url + "/project-categories"}
+        path={match.url + "/project-categories"}
         component={ProjectCategories}
       />
-      // 由 @mogul/cli 插入新的 module
+      {/* 由 @mogul/cli 插入新的 module */}
     </Switch>
   </Dashboard>
 );
@@ -210,8 +203,8 @@ import Detail from "./Detail.js";
 
 export default ({ match }) => (
   <Switch>
-    <Route match={match.url} component={Collection} exact />
-    <Route match={match.url + "/:id"} component={Detail} />
+    <Route path={match.url} component={Collection} exact />
+    <Route path={match.url + "/:id"} component={Detail} />
   </Switch>
 );
 ```
