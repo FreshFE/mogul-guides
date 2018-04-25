@@ -52,17 +52,31 @@ startapp                                   # 生成的文件根目录
 
 ```json
 {
-  "name": "startapp",
+  "name": "mogul-template",
   "version": "0.0.1",
-  "private": false,
-  "license": "MIT",
+  "private": true,
+  "license": "GPL",
+  "description": "mogul-template",
+  "repository": "https://github.com/freshesx/mogul-template.git",
   "scripts": {
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
-    "module": "plop module"
+    "module": "plop --plopfile ./node_modules/mogul/plopfile.js",
+    "test": "react-app-rewired test --env=jsdom",
+    "precommit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "git add"
+    ]
+  },
+  "dependencies": {
+    "mogul": "^0.1.5"
   },
   "devDependencies": {
-    "mogul": "^0.0.8"
+    "husky": "^0.14.3",
+    "lint-staged": "^7.0.4"
   }
 }
 ```
